@@ -58,10 +58,16 @@ int main() {
     queue2.dequeue();
 
     Queue<int> queue3 = queue2;
-    std::cout << queue3.toString() << std::endl;
+    std::cout << queue3.toString() << std::endl; // оператор присваивания
 
     Queue<int> queue4(queue2);
-    std::cout << queue4.toString() << std::endl;
+    std::cout << queue4.toString() << std::endl; // оператор копирования
+
+    queue.dequeue(); // чтобы начинал не сначала
+
+    for (int & iter : queue) { // демонстрация работоспособности итератора
+        std::cout << iter << "\t";
+    }
 
     return 0;
 }

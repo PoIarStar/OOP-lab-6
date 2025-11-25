@@ -37,6 +37,29 @@ public:
 
     // функция только для отладки и демонстрации работоспособности
     [[nodiscard]] std::string toString() const;
+
+
+    //далее итератор, соответствующие поля и методы
+    template<typename V>
+    class QueueIterator: public std::iterator<std::input_iterator_tag, V> {
+        protected:
+        V* p;
+        public:
+        QueueIterator(V* p);
+        QueueIterator(const QueueIterator<V>& other);
+
+        bool operator==(const QueueIterator<V>& other) const;
+        bool operator!=(const QueueIterator<V>& other) const;
+        typename QueueIterator::reference operator*() const;
+        QueueIterator& operator++();
+    };
+
+    typedef QueueIterator<T> iterator;
+    typedef QueueIterator<const T> const_iterator;
+    iterator begin();
+    iterator end();
+    const_iterator begin() const;
+    const_iterator end() const;
 };
 
 #include "Queue.cpp"

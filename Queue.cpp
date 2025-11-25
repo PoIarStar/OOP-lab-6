@@ -136,3 +136,57 @@ std::string Queue<T>::toString() const {
     result += "]";
     return result;
 }
+
+template<typename T>
+template<typename V>
+Queue<T>::QueueIterator<V>::QueueIterator(V *p): p(p) {}
+
+template<typename T>
+template<typename V>
+Queue<T>::QueueIterator<V>::QueueIterator(const QueueIterator<V> &other): p(other.p) {}
+
+template<typename T>
+template<typename V>
+bool Queue<T>::QueueIterator<V>::operator==(const QueueIterator<V> &other) const {
+    return p == other.p;
+}
+
+template<typename T>
+template<typename V>
+bool Queue<T>::QueueIterator<V>::operator!=(const QueueIterator<V> &other) const {
+    return p != other.p;
+}
+
+template<typename T>
+template<typename V>
+typename Queue<T>::template QueueIterator<V>::reference Queue<T>::QueueIterator<V>::operator*() const {
+    return  *p;
+}
+
+template<typename T>
+template<typename V>
+typename Queue<T>::template QueueIterator<V> & Queue<T>::QueueIterator<V>::operator++() {
+    ++p;
+    return *this;
+}
+
+template<typename T>
+typename Queue<T>::iterator Queue<T>::begin() {
+    return iterator(&this->array[*this->first]);
+}
+
+template<typename T>
+typename Queue<T>::iterator Queue<T>::end() {
+    return iterator(&this->array[*this->first] + *this->size);
+}
+
+template<typename T>
+typename Queue<T>::const_iterator Queue<T>::begin() const {
+    return const_iterator(&this->array[*this->first]);
+}
+
+template<typename T>
+typename Queue<T>::const_iterator Queue<T>::end() const {
+
+    return const_iterator(&this->array[*this->first] + *this->size);
+}
