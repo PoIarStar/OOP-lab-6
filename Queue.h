@@ -6,12 +6,14 @@ template<typename T>
 class Queue {
 protected:
     T *array;
-    std::size_t* capacity; //количество ячеек в массиве
-    std::size_t* size; //количество значений в массиве
-    std::size_t* first; //индекс первого значения
+    std::size_t *capacity; //количество ячеек в массиве
+    std::size_t *size; //количество значений в массиве
+    std::size_t *first; //индекс первого значения
 
     size_t last_index();
+
     void shift_to_left();
+
 public:
     Queue();
 
@@ -40,25 +42,35 @@ public:
 
 
     //далее итератор, соответствующие поля и методы
-    template<typename V>
-    class QueueIterator: public std::iterator<std::input_iterator_tag, V> {
-        protected:
-        V* p;
-        public:
-        QueueIterator(V* p);
-        QueueIterator(const QueueIterator<V>& other);
+    class QueueIterator : public std::iterator<std::input_iterator_tag, T> {
+    protected:
+        T *p;
+        T *arr_start;
+        T *arr_end;
 
-        bool operator==(const QueueIterator<V>& other) const;
-        bool operator!=(const QueueIterator<V>& other) const;
+    public:
+        QueueIterator(T *p, T* arr_start, T* arr_end);
+
+        QueueIterator(const QueueIterator &other);
+
+        bool operator==(const QueueIterator &other) const;
+
+        bool operator!=(const QueueIterator &other) const;
+
         typename QueueIterator::reference operator*() const;
-        QueueIterator& operator++();
+
+        QueueIterator &operator++();
     };
 
-    typedef QueueIterator<T> iterator;
-    typedef QueueIterator<const T> const_iterator;
+    typedef QueueIterator iterator;
+    typedef QueueIterator const_iterator;
+
     iterator begin();
+
     iterator end();
+
     const_iterator begin() const;
+
     const_iterator end() const;
 };
 

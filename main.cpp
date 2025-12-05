@@ -31,6 +31,17 @@ int main() {
 
     queue.enqueue(6);
     queue.enqueue(7);
+
+
+    std::cout << queue.toString() << std::endl;
+
+    std::cout << *queue.end();
+    std::cout << std::endl;
+    for (const int iter : queue) { // демонстрация работоспособности итератора
+        std::cout << iter << "\t";
+    }
+    std::cout << std::endl;
+
     queue.enqueue(1);
 
     queue.dequeue();
@@ -45,11 +56,23 @@ int main() {
     queue.enqueue(7);
     std::cout << queue.toString() << std::endl; // массив заполнен
     queue.enqueue(8);
-    std::cout << queue.toString() << std::endl; // сдвиг и добавление
+    std::cout << queue.toString() << std::endl; // добавление в начало
     queue.enqueue(9);
+    std::cout << queue.toString() << std::endl; // очередь заполнена
+
+    for (const int iter : queue) { // демонстрация работоспособности итератора
+        std::cout << iter << "\t";
+    }
+    std::cout << std::endl;
+
     queue.enqueue(10);
     queue.enqueue(11);
     std::cout << queue.toString() << std::endl; // расширение массива и добавление
+
+    for (const int iter : queue) { // демонстрация работоспособности итератора
+        std::cout << iter << "\t";
+    }
+    std::cout << std::endl;
 
     int arr[4]{0, 0, 1, 2};
     Queue<int> queue2(arr, 4);
@@ -65,7 +88,13 @@ int main() {
 
     queue.dequeue(); // чтобы начинал не сначала
 
-    for (int & iter : queue) { // демонстрация работоспособности итератора
+    for (const int iter : queue) { // демонстрация работоспособности итератора
+        std::cout << iter << "\t";
+    }
+
+    Queue<int> queue5 = queue;
+    std::cout << queue5.toString() << std::endl;
+    for (const int iter : queue5) { // демонстрация работоспособности итератора
         std::cout << iter << "\t";
     }
 

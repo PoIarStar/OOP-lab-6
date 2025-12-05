@@ -6,15 +6,7 @@
 
 template<typename T>
 size_t Queue<T>::last_index() {
-    return *this->first + *this->size - 1;
-}
-
-template<typename T>
-void Queue<T>::shift_to_left() {
-    for (int i = 0; i < *this->size; i++) {
-        this->array[i] = this->array[i + *first];
-    }
-    *this->first = 0;
+    return (*this->first + *this->size - 1) % *this->capacity;
 }
 
 template<typename T>
@@ -52,7 +44,7 @@ Queue<T>::~Queue() {
 template<typename T>
 Queue<T> &Queue<T>::operator=(const Queue &other) {
     if (this != &other) {
-        if (*this->capacity < *other.size) {
+        if (*this->capacity < *other.size + 1) { // место под пустую ячейку
             *this->capacity = *other.capacity;
             delete this->array;
             this->array = new T[*this->capacity];
@@ -78,26 +70,26 @@ void Queue<T>::enqueue(T elem) {
         // самый крайний случай: очередь опустела
         *this->first = 0;
         this->array[0] = elem;
+        *size = 1;
     }
-    else if (last_index() == *this->capacity - 1 && *this->first > 0) {
-        // места в конце нет, но можно сдвинуть к началу
-        shift_to_left();
-        this->array[last_index() + 1] = elem;
-    }
-    else if (last_index() == *this->capacity - 1) {
+    else if (get_size() == (*this->capacity - 1)) { // один элемент остаётся пустым во избежание наложения начала и конца итераторов
         // массив заполнен, перевыделяем память
         T* newArray = new T[*this->capacity * 2]; // увеличиваем размер вдвое просто потому что так было в примере
-        for (int i = 0; i < *this->capacity; i++) {
-            newArray[i] = this->array[i];
+
+        int i = 0;
+        for (T el : *this) {
+            newArray[i++] = el;
         }
+        *this->first = 0;
         *this->capacity = *this->capacity * 2;
         delete this->array;
         this->array = newArray;
-        array[last_index() + 1] = elem;
+        (*size)++;
+        array[last_index()] = elem;
     }
     else // стандартный случай, есть место для вставки
-        array[last_index() + 1] = elem;
-    (*this->size)++;
+        (*size)++;
+        array[last_index()] = elem;
 }
 
 template<typename T>
@@ -105,8 +97,8 @@ void Queue<T>::dequeue() {
     if (isEmpty()) {
         throw std::out_of_range("Queue is empty");
     }
-    (*this->size)--;
-    (*this->first)++;
+    --(*this->size);
+    ++(*this->first);
 }
 
 template<typename T>
@@ -138,55 +130,54 @@ std::string Queue<T>::toString() const {
 }
 
 template<typename T>
-template<typename V>
-Queue<T>::QueueIterator<V>::QueueIterator(V *p): p(p) {}
+Queue<T>::QueueIterator::QueueIterator(T *p, T* arr_start, T* arr_end): p(p), arr_start(arr_start), arr_end(arr_end) {}
 
 template<typename T>
-template<typename V>
-Queue<T>::QueueIterator<V>::QueueIterator(const QueueIterator<V> &other): p(other.p) {}
+Queue<T>::QueueIterator::QueueIterator(const QueueIterator &other): p(other.p), arr_start(other.arr_start), arr_end(other.arr_end) {}
 
 template<typename T>
-template<typename V>
-bool Queue<T>::QueueIterator<V>::operator==(const QueueIterator<V> &other) const {
+bool Queue<T>::QueueIterator::operator==(const QueueIterator &other) const {
     return p == other.p;
 }
 
 template<typename T>
-template<typename V>
-bool Queue<T>::QueueIterator<V>::operator!=(const QueueIterator<V> &other) const {
+bool Queue<T>::QueueIterator::operator!=(const QueueIterator &other) const {
     return p != other.p;
 }
 
 template<typename T>
-template<typename V>
-typename Queue<T>::template QueueIterator<V>::reference Queue<T>::QueueIterator<V>::operator*() const {
-    return  *p;
+typename Queue<T>::QueueIterator::reference Queue<T>::QueueIterator::operator*() const { // проверить p
+    if (p != nullptr)
+        return  *p;
+    throw std::out_of_range("");
 }
 
 template<typename T>
-template<typename V>
-typename Queue<T>::template QueueIterator<V> & Queue<T>::QueueIterator<V>::operator++() {
-    ++p;
+typename Queue<T>::QueueIterator & Queue<T>::QueueIterator::operator++() {
+    if (p == arr_end)
+        p = arr_start;
+    else
+        p++;
     return *this;
 }
 
 template<typename T>
 typename Queue<T>::iterator Queue<T>::begin() {
-    return iterator(&this->array[*this->first]);
+    return iterator(&this->array[*this->first], &this->array[0], &this->array[*capacity - 1]);
 }
 
 template<typename T>
 typename Queue<T>::iterator Queue<T>::end() {
-    return iterator(&this->array[*this->first] + *this->size);
+    return iterator(&this->array[this->last_index()] + 1, &this->array[0], &this->array[*capacity - 1]);
 }
 
 template<typename T>
 typename Queue<T>::const_iterator Queue<T>::begin() const {
-    return const_iterator(&this->array[*this->first]);
+    return const_iterator(&this->array[*this->first], &this->array[0], &this->array[*capacity - 1]);
 }
 
 template<typename T>
 typename Queue<T>::const_iterator Queue<T>::end() const {
 
-    return const_iterator(&this->array[*this->first] + *this->size);
+    return const_iterator(&this->array[this->last_index()] + 1, &this->array[0], &this->array[*capacity - 1]);
 }
